@@ -1,0 +1,25 @@
+Process TrainHead-0:
+Traceback (most recent call last):
+  File "/root/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/root/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/module.py", line 291, in run_module
+    loop.run_until_complete(task)
+  File "/root/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/module.py", line 230, in run_module_inner
+    raise e
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/module.py", line 224, in run_module_inner
+    await module.run()
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/modules/train/train_head.py", line 431, in run
+    await super().run()
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/module.py", line 142, in run
+    socket_path = get_socket_path(self._config.socket_dir, module_name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/utils.py", line 47, in get_socket_path
+    validate_socket_filepath(socket_path)
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/_private/utils.py", line 1906, in validate_socket_filepath
+    raise OSError(
+OSError: validate_socket_filename failed: AF_UNIX path length cannot exceed 107 bytes: /mnt/pfs/scalelab2/ziqian/RLinf/ray_tmp/ray/session_2026-01-19_14-49-48_755431_262572/sockets/dash_TrainHead

@@ -1,0 +1,44 @@
+:job_id:01000000
+:actor_name:EmbodiedFSDPActor
+[INFO 14:50:21 FlexiblePlacementStrategy] 
+[INFO 14:50:21 FlexiblePlacementStrategy] Using flexible placement with hardware ranks: [[0], [1], [2], [3]].
+/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/keras/src/export/tf2onnx_lib.py:8: FutureWarning: In the future `np.object` will be defined as the corresponding NumPy scalar.
+  if not hasattr(np, "object"):
+INFO:datasets:PyTorch version 2.6.0 available.
+INFO:datasets:Polars version 1.36.1 available.
+INFO:datasets:TensorFlow version 2.20.0 available.
+INFO:datasets:JAX version 0.5.3 available.
+INFO:root:Loaded norm stats from /mnt/pfs/scalelab2/ziqian/RLinf/logs/20251230-215715_cfm_ema_2gpu/cfm_sft_pi05_ema_2gpu/checkpoints/global_step_1000/actor/model/physical-intelligence/libero
+INFO:root:Loaded norm stats from /mnt/pfs/scalelab2/ziqian/RLinf/logs/20251230-215715_cfm_ema_2gpu/cfm_sft_pi05_ema_2gpu/checkpoints/global_step_1000/actor/model/physical-intelligence/libero
+/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/torch/distributed/fsdp/wrap.py:492: FutureWarning: The `NO_SHARD` sharding strategy is deprecated. If having issues, please use `DistributedDataParallel` instead.
+  return wrapper_cls(module, **kwargs)
+/mnt/pfs/scalelab2/ziqian/RLinf/rlinf/hybrid_engines/fsdp/strategy/fsdp.py:80: FutureWarning: The `NO_SHARD` sharding strategy is deprecated. If having issues, please use `DistributedDataParallel` instead.
+  fsdp_model = FSDP(
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG] Checking optimizer parameter groups:
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG] Param group 0: lr=1e-05
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   Params in group: 10
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG] Param group 1: lr=0.0001
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   Params in group: 8
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG] Checking all trainable parameters:
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   Critic: _fsdp_wrapped_module.value_head._fsdp_wrapped_module.mlp.0.weight
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   Critic: _fsdp_wrapped_module.value_head._fsdp_wrapped_module.mlp.0.bias
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   Critic: _fsdp_wrapped_module.value_head._fsdp_wrapped_module.mlp.2.weight
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   Critic: _fsdp_wrapped_module.value_head._fsdp_wrapped_module.mlp.2.bias
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   Critic: _fsdp_wrapped_module.value_head._fsdp_wrapped_module.mlp.4.weight
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   Critic: _fsdp_wrapped_module.value_head._fsdp_wrapped_module.mlp.4.bias
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   Critic: _fsdp_wrapped_module.value_head._fsdp_wrapped_module.mlp.6.weight
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   Critic: _fsdp_wrapped_module.value_head._fsdp_wrapped_module.mlp.6.bias
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   ✓ LatentActor: _fsdp_wrapped_module.latent_actor.trunk.0.weight
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   ✓ LatentActor: _fsdp_wrapped_module.latent_actor.trunk.0.bias
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   ✓ LatentActor: _fsdp_wrapped_module.latent_actor.trunk.2.weight
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   ✓ LatentActor: _fsdp_wrapped_module.latent_actor.trunk.2.bias
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   ✓ LatentActor: _fsdp_wrapped_module.latent_actor.trunk.4.weight
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   ✓ LatentActor: _fsdp_wrapped_module.latent_actor.trunk.4.bias
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   ✓ LatentActor: _fsdp_wrapped_module.latent_actor.mean_head.weight
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   ✓ LatentActor: _fsdp_wrapped_module.latent_actor.mean_head.bias
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   ✓ LatentActor: _fsdp_wrapped_module.latent_actor.logstd_head.weight
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG]   ✓ LatentActor: _fsdp_wrapped_module.latent_actor.logstd_head.bias
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG] Total trainable actor params (excl. critic): 10
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG] Total trainable critic params: 8
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG] Total trainable latent_actor params: 10
+INFO:rlinf.workers.actor.fsdp_actor_worker:[DSRL DEBUG] Stored 10 latent_actor params for tracking

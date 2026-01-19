@@ -63,8 +63,9 @@ class ClusterEnvVar(str, Enum):
 class Cluster:
     """A singleton class that manages the cluster resources for Ray workers."""
 
-    SYS_NAME = "RLinf"
-    NAMESPACE = SYS_NAME
+    # 支持通过环境变量设置命名空间，允许多个训练共享Ray集群
+    SYS_NAME = os.environ.get("RLINF_SYS_NAME", "RLinf")
+    NAMESPACE = os.environ.get("RLINF_NAMESPACE", SYS_NAME)
     LOGGING_LEVEL = os.getenv(
         f"{SYS_NAME.upper()}_{ClusterEnvVar.LOG_LEVEL.value}", "INFO"
     ).upper()

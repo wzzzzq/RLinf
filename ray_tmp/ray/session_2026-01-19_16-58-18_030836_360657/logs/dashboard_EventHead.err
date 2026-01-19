@@ -1,0 +1,46 @@
+Process EventHead-0:
+Traceback (most recent call last):
+  File "/root/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/root/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/module.py", line 291, in run_module
+    loop.run_until_complete(task)
+  File "/root/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/module.py", line 230, in run_module_inner
+    raise e
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/module.py", line 224, in run_module_inner
+    await module.run()
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/modules/event/event_head.py", line 225, in run
+    await super().run()
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/module.py", line 142, in run
+    socket_path = get_socket_path(self._config.socket_dir, module_name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/utils.py", line 47, in get_socket_path
+    validate_socket_filepath(socket_path)
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/_private/utils.py", line 1906, in validate_socket_filepath
+    raise OSError(
+OSError: validate_socket_filename failed: AF_UNIX path length cannot exceed 107 bytes: /mnt/pfs/scalelab2/ziqian/RLinf/ray_tmp/ray/session_2026-01-19_16-58-18_030836_360657/sockets/dash_EventHead
+Exception ignored in atexit callback: <function shutdown at 0x7f853db57f60>
+Traceback (most recent call last):
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/_private/client_mode_hook.py", line 104, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/_private/worker.py", line 1979, in shutdown
+    from ray.dag.compiled_dag_node import _shutdown_all_compiled_dags
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dag/__init__.py", line 1, in <module>
+    from ray.dag.dag_node import DAGNode
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dag/dag_node.py", line 2, in <module>
+    from ray.experimental.channel.auto_transport_type import AutoTransportType
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/experimental/channel/__init__.py", line 1, in <module>
+    from ray.experimental.channel.cached_channel import CachedChannel
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/experimental/channel/cached_channel.py", line 7, in <module>
+    class CachedChannel(ChannelInterface):
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/experimental/channel/cached_channel.py", line 7, in CachedChannel
+    class CachedChannel(ChannelInterface):
+    
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/module.py", line 287, in sigterm_handler
+    sys.exit(signum)
+SystemExit: 15

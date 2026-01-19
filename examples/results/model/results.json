@@ -1,0 +1,119 @@
+{
+  "model_path": "/mnt/pfs/scalelab/ziqian/RLinf_logs/20251225-10:49:44/cfm_sft_openpi/checkpoints/global_step_1000/actor/model",
+  "num_episodes": 50,
+  "max_steps": 480,
+  "seed": 42,
+  "overall_success_rate": 8.0,
+  "task_results": {
+    "task_0": {
+      "language": "put both the alphabet soup and the tomato sauce in the basket",
+      "success_rate": 0.0,
+      "successes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "task_1": {
+      "language": "put both the cream cheese box and the butter in the basket",
+      "success_rate": 0.0,
+      "successes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "task_2": {
+      "language": "turn on the stove and put the moka pot on it",
+      "success_rate": 40.0,
+      "successes": [
+        0,
+        1,
+        1,
+        0,
+        0
+      ]
+    },
+    "task_3": {
+      "language": "put the black bowl in the bottom drawer of the cabinet and close it",
+      "success_rate": 40.0,
+      "successes": [
+        0,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    "task_4": {
+      "language": "put the white mug on the left plate and put the yellow and white mug on the right plate",
+      "success_rate": 0.0,
+      "successes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "task_5": {
+      "language": "pick up the book and place it in the back compartment of the caddy",
+      "success_rate": 0.0,
+      "successes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "task_6": {
+      "language": "put the white mug on the plate and put the chocolate pudding to the right of the plate",
+      "success_rate": 0.0,
+      "successes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "task_7": {
+      "language": "put both the alphabet soup and the cream cheese box in the basket",
+      "success_rate": 0.0,
+      "successes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "task_8": {
+      "language": "put both moka pots on the stove",
+      "success_rate": 0.0,
+      "successes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "task_9": {
+      "language": "put the yellow and white mug in the microwave and close it",
+      "success_rate": 0.0,
+      "successes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  }
+}

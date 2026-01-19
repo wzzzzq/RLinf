@@ -1005,6 +1005,10 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
                     loss_mask = data.get("loss_mask", None)
                     loss_mask_sum = data.get("loss_mask_sum", None)
 
+                    # DSRL: get latent actor logprobs if available
+                    dsrl_enabled = self.cfg.algorithm.get("dsrl_enabled", False)
+                    prev_logprobs_latent = data.get("prev_logprobs_latent", None)
+
                     if SupportedModel(self.cfg.actor.model.model_type) in [
                         SupportedModel.OPENVLA,
                         SupportedModel.OPENVLA_OFT,
@@ -1032,14 +1036,22 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
                     ]:
                         prev_logprobs = output_dict["prev_logprobs"]
 
+                    # DSRL: use latent actor logprobs for PPO loss
+                    if dsrl_enabled and prev_logprobs_latent is not None:
+                        logprobs_for_ppo = output_dict.get("logprobs_latent", output_dict["logprobs"])
+                        old_logprobs_for_ppo = prev_logprobs_latent
+                    else:
+                        logprobs_for_ppo = output_dict["logprobs"]
+                        old_logprobs_for_ppo = prev_logprobs
+
                     kwargs = {
                         "loss_type": self.cfg.algorithm.loss_type,
                         "logprob_type": self.cfg.algorithm.logprob_type,
                         "reward_type": self.cfg.algorithm.reward_type,
                         "single_action_dim": self.cfg.actor.model.get("action_dim", 7),
-                        "logprobs": output_dict["logprobs"],
+                        "logprobs": logprobs_for_ppo,
                         "values": output_dict.get("values", None),
-                        "old_logprobs": prev_logprobs,
+                        "old_logprobs": old_logprobs_for_ppo,
                         "advantages": advantages,
                         "returns": returns,
                         "prev_values": prev_values,
@@ -1061,13 +1073,17 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
                         self.cfg.algorithm.entropy_bonus > 0
                         and not kwargs["critic_warmup"]
                     ):
-                        entropy = output_dict["entropy"]
-                        entropy = reshape_entropy(
-                            entropy,
-                            entropy_type=self.cfg.algorithm.entropy_type,
-                            action_dim=self.cfg.actor.model.get("action_dim", 7),
-                            batch_size=output_dict["logprobs"].shape[0],
-                        )
+                        # DSRL: use latent actor entropy if available
+                        if dsrl_enabled and "entropy_latent" in output_dict:
+                            entropy = output_dict["entropy_latent"]
+                        else:
+                            entropy = output_dict["entropy"]
+                            entropy = reshape_entropy(
+                                entropy,
+                                entropy_type=self.cfg.algorithm.entropy_type,
+                                action_dim=self.cfg.actor.model.get("action_dim", 7),
+                                batch_size=output_dict["logprobs"].shape[0],
+                            )
                         entropy_loss = masked_mean(entropy, mask=loss_mask)
                         loss -= self.cfg.algorithm.entropy_bonus * entropy_loss
                     metrics_data["entropy_loss"] = entropy_loss.detach().item()
@@ -1082,6 +1098,7 @@ class EmbodiedFSDPActor(FSDPModelManager, Worker):
                 torch.cuda.empty_cache()
 
                 grad_norm, lr_list = self.optimizer_step()
+
                 data = {
                     "actor/grad_norm": grad_norm,
                     "actor/lr": lr_list[0],

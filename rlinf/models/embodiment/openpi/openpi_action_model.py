@@ -28,6 +28,7 @@ from openpi.models_pytorch.pi0_pytorch import PI0Pytorch, make_att_2d_masks
 
 from rlinf.models.embodiment.base_policy import BasePolicy
 from rlinf.models.embodiment.modules.explore_noise_net import ExploreNoiseNet
+from rlinf.models.embodiment.modules.latent_actor import LatentActor
 from rlinf.models.embodiment.modules.value_head import ValueHead
 
 
@@ -63,6 +64,12 @@ class OpenPi0Config(Pi0Config):
     add_value_head: bool = False  # add value head for ppo
     value_after_vlm: bool = False  # value after vlm, pi05 mode
     value_vlm_mode: str = "mean_token"  # last_token, mean_token, first_token
+    # DSRL config
+    dsrl_enabled: bool = False  # enable DSRL latent actor
+    dsrl_state_dim: int = 2056  # 2048 (prefix) + 8 (state for LIBERO)
+    dsrl_hidden_dims: list = field(
+        default_factory=lambda: [512, 256, 128]
+    )  # hidden dims for latent actor
 
 
 class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
@@ -136,9 +143,42 @@ class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
             self.noise_head = self.noise_head.to(
                 dtype=self.action_out_proj.weight.dtype
             )
+        # DSRL latent actor for predicting initial noise
+        if getattr(self.config, "dsrl_enabled", False):
+            self.latent_actor = LatentActor(
+                state_dim=self.config.dsrl_state_dim,
+                action_horizon=self.config.action_horizon,
+                action_dim=self.config.action_dim,
+                hidden_dims=self.config.dsrl_hidden_dims,
+            )
+            self.latent_actor = self.latent_actor.to(
+                dtype=self.action_out_proj.weight.dtype
+            )
 
     def set_global_step(self, global_step):
         self.global_step = global_step
+
+    def get_state_feature_for_dsrl(
+        self, prefix_output: torch.Tensor, state: torch.Tensor
+    ) -> torch.Tensor:
+        """
+        Extract state feature for DSRL latent actor.
+
+        Args:
+            prefix_output: VLM prefix output of shape [bs, seq_len, hidden_dim].
+                For Pi0.5: [bs, 968, 2048]
+            state: Robot state of shape [bs, state_dim].
+
+        Returns:
+            State feature of shape [bs, dsrl_state_dim].
+        """
+        # Mean pool over sequence dimension
+        prefix_feat = prefix_output.mean(dim=1)  # [bs, hidden_dim]
+        # Ensure state is float32 for concatenation
+        state = state.to(dtype=prefix_feat.dtype)
+        # Concatenate prefix and state
+        state_feature = torch.cat([prefix_feat, state], dim=-1)
+        return state_feature
 
     def _tensor_to_numpy(self, x):
         """Convert tensor to numpy, handling BFloat16/Float16 conversion."""
@@ -260,8 +300,8 @@ class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
         images = [img.to(device) for img in images]
         img_masks = [img_mask.to(device) for img_mask in img_masks]
         state = state.to(device)
-        # get log prob
-        log_probs, value_t, entropy = self.get_log_prob_value(
+        # get log prob (also returns prefix_output for DSRL)
+        log_probs, value_t, entropy, prefix_output = self.get_log_prob_value(
             images,
             img_masks,
             lang_tokens,
@@ -283,11 +323,29 @@ class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
             :, None
         ]  # [:,None] to align with loss-mask shape
         value_t = value_t.mean(dim=-1, keepdim=False)
-        return {
+        result = {
             "logprobs": log_probs,
             "values": value_t,
             "entropy": entropy,
         }
+        # DSRL: compute latent actor logprob for training (reuse prefix_output)
+        if getattr(self.config, "dsrl_enabled", False) and "initial_noise" in data:
+            state_feature = self.get_state_feature_for_dsrl(prefix_output, state)
+            initial_noise = data["initial_noise"]
+            logprobs_latent = self.latent_actor.get_log_prob(
+                state_feature,
+                initial_noise,
+                action_chunk=self.config.action_chunk,
+                action_env_dim=self.config.action_env_dim,
+            )
+            entropy_latent = self.latent_actor.get_entropy(
+                state_feature,
+                action_chunk=self.config.action_chunk,
+                action_env_dim=self.config.action_env_dim,
+            )
+            result["logprobs_latent"] = logprobs_latent
+            result["entropy_latent"] = entropy_latent.mean(dim=[1, 2], keepdim=False)[:, None]
+        return result
 
     def obs_processor(self, env_obs):
         # base observation
@@ -360,6 +418,9 @@ class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
             "tokenized_prompt": processed_obs["tokenized_prompt"],
             "tokenized_prompt_mask": processed_obs["tokenized_prompt_mask"],
         }
+        # DSRL: store initial_noise for training recomputation
+        if "initial_noise" in outputs:
+            forward_inputs["initial_noise"] = outputs["initial_noise"]
         forward_inputs.update(to_process_obs)
         forward_inputs.pop("prompt", None)
         result = {
@@ -367,6 +428,9 @@ class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
             "prev_values": outputs["prev_values"],
             "forward_inputs": forward_inputs,
         }
+        # DSRL: add latent actor logprobs
+        if "prev_logprobs_latent" in outputs:
+            result["prev_logprobs_latent"] = outputs["prev_logprobs_latent"]
         return actions, result
 
     @torch.no_grad()
@@ -381,9 +445,6 @@ class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
         bsize = observation.state.shape[0]
         device = observation.state.device
         num_steps = self.config.num_steps
-        if noise is None:
-            actions_shape = (bsize, self.config.action_horizon, self.config.action_dim)
-            noise = self.sample_noise(actions_shape, device)
 
         images, img_masks, lang_tokens, lang_masks, state = (
             self._preprocess_observation(observation, train=False)
@@ -406,6 +467,24 @@ class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
             inputs_embeds=[prefix_embs, None],
             use_cache=True,
         )
+
+        # DSRL: use latent actor to predict initial noise
+        prev_logprobs_latent = None
+        initial_noise = None
+        if getattr(self.config, "dsrl_enabled", False) and mode == "train":
+            state_feature = self.get_state_feature_for_dsrl(prefix_output, state)
+            initial_noise, prev_logprobs_latent = self.latent_actor.sample_and_log_prob(
+                state_feature,
+                action_chunk=self.config.action_chunk,
+                action_env_dim=self.config.action_env_dim,
+            )
+            # Use latent actor's noise as initial noise
+            if noise is None:
+                noise = initial_noise
+
+        if noise is None:
+            actions_shape = (bsize, self.config.action_horizon, self.config.action_dim)
+            noise = self.sample_noise(actions_shape, device)
 
         x_t = noise
         # add sde sample and traj collect
@@ -445,7 +524,11 @@ class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
         # denoise step
         for idx in range(num_steps):
             # sample mean var val
-            if idx == denoise_inds[0][idx]:
+            # DSRL: 强制使用eval模式确保确定性去噪
+            # 随机性来自latent_actor，不是去噪过程
+            if getattr(self.config, "dsrl_enabled", False):
+                sample_mode = "eval"
+            elif idx == denoise_inds[0][idx]:
                 sample_mode = "train"
             else:
                 sample_mode = "eval"
@@ -484,13 +567,19 @@ class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
             values = values_vlm[:, None]
         else:
             values = torch.stack(values, dim=1).mean(dim=-1, keepdim=True)
-        return {
+        result = {
             "actions": x_0,
             "chains": chains,
             "prev_logprobs": log_probs,
             "prev_values": values,
             "denoise_inds": denoise_inds,
         }
+        # DSRL: add latent actor outputs
+        if prev_logprobs_latent is not None:
+            result["prev_logprobs_latent"] = prev_logprobs_latent
+        if initial_noise is not None:
+            result["initial_noise"] = initial_noise
+        return result
 
     def sample_mean_var_val(
         self,
@@ -745,7 +834,7 @@ class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
             chains_entropy = torch.stack(chains_entropy, dim=1)
         else:
             chains_entropy = torch.zeros_like(chains_log_probs)
-        return chains_log_probs, chains_values, chains_entropy
+        return chains_log_probs, chains_values, chains_entropy, prefix_output
 
     def get_value_from_vlm(self, prefix_output):
         # prefix_output:
@@ -786,3 +875,40 @@ class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
             self.paligemma_with_expert.paligemma.eval()
             for params in self.paligemma_with_expert.paligemma.parameters():
                 params.requires_grad = False
+
+    def freeze_for_dsrl(self):
+        """DSRL模式下冻结Pi0.5 action model，保留latent_actor和value_head可训练"""
+        # === 冻结的模块 ===
+        # 冻结VLM
+        self.paligemma_with_expert.paligemma.eval()
+        for params in self.paligemma_with_expert.paligemma.parameters():
+            params.requires_grad = False
+
+        # 冻结Expert (关键修复)
+        self.paligemma_with_expert.gemma_expert.eval()
+        for params in self.paligemma_with_expert.gemma_expert.parameters():
+            params.requires_grad = False
+
+        # 冻结投影层
+        for params in self.action_in_proj.parameters():
+            params.requires_grad = False
+        for params in self.action_out_proj.parameters():
+            params.requires_grad = False
+
+        # 冻结 time embedding MLPs (Flow Matching 的一部分)
+        if hasattr(self, 'time_mlp_in'):
+            for params in self.time_mlp_in.parameters():
+                params.requires_grad = False
+        if hasattr(self, 'time_mlp_out'):
+            for params in self.time_mlp_out.parameters():
+                params.requires_grad = False
+
+        # === 保持可训练的模块 ===
+        # latent_actor: PPO训练的目标
+        if hasattr(self, 'latent_actor'):
+            self.latent_actor.train()
+            for params in self.latent_actor.parameters():
+                params.requires_grad = True
+
+        # value_head: critic，不在冻结范围内，自动保持可训练
+        # (value_head是独立模块，不属于paligemma_with_expert)

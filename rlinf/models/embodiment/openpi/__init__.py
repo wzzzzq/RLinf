@@ -54,6 +54,10 @@ def get_model(cfg: DictConfig, torch_dtype=None):
     if actor_model_config.train_expert_only:
         model.freeze_vlm()
 
+    # DSRL: 冻结整个Pi0.5，只训练latent_actor和value_head
+    if getattr(actor_model_config, 'dsrl_enabled', False):
+        model.freeze_for_dsrl()
+
     for weight_path in weight_paths:
         safetensors.torch.load_model(model, weight_path, strict=False)
     model.paligemma_with_expert.to_bfloat16_for_selected_params("bfloat16")

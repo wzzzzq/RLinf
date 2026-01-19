@@ -1,0 +1,20 @@
+:job_id:01000000
+:actor_name:MultiStepRolloutWorker
+[INFO 16:58:49 FlexiblePlacementStrategy] 
+[INFO 16:58:49 FlexiblePlacementStrategy] Using flexible placement with hardware ranks: [[0], [1], [2], [3]].
+/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/keras/src/export/tf2onnx_lib.py:8: FutureWarning: In the future `np.object` will be defined as the corresponding NumPy scalar.
+  if not hasattr(np, "object"):
+INFO:datasets:PyTorch version 2.6.0 available.
+INFO:datasets:Polars version 1.36.1 available.
+INFO:datasets:TensorFlow version 2.20.0 available.
+INFO:datasets:JAX version 0.5.3 available.
+INFO:root:Loaded norm stats from /mnt/pfs/scalelab2/ziqian/RLinf/logs/20251230-215715_cfm_ema_2gpu/cfm_sft_pi05_ema_2gpu/checkpoints/global_step_1000/actor/model/physical-intelligence/libero
+INFO:root:Loaded norm stats from /mnt/pfs/scalelab2/ziqian/RLinf/logs/20251230-215715_cfm_ema_2gpu/cfm_sft_pi05_ema_2gpu/checkpoints/global_step_1000/actor/model/physical-intelligence/libero
+Generating Rollout Epochs:   0%|          | 0/2 [00:00<?, ?it/s]Generating Rollout Epochs:  50%|█████     | 1/2 [01:11<01:11, 71.94s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:29<00:00, 75.37s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:29<00:00, 74.86s/it]
+Generating Rollout Epochs:   0%|          | 0/2 [00:00<?, ?it/s]Generating Rollout Epochs:  50%|█████     | 1/2 [01:15<01:15, 75.30s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:31<00:00, 75.97s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:31<00:00, 75.87s/it]
+Generating Rollout Epochs:   0%|          | 0/2 [00:00<?, ?it/s]Generating Rollout Epochs:  50%|█████     | 1/2 [01:16<01:16, 76.93s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:33<00:00, 76.68s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:33<00:00, 76.72s/it]
+Generating Rollout Epochs:   0%|          | 0/2 [00:00<?, ?it/s]Generating Rollout Epochs:  50%|█████     | 1/2 [01:16<01:16, 76.81s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:30<00:00, 75.14s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:30<00:00, 75.39s/it]
+Generating Rollout Epochs:   0%|          | 0/2 [00:00<?, ?it/s]Generating Rollout Epochs:  50%|█████     | 1/2 [01:15<01:15, 75.22s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:33<00:00, 76.74s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:33<00:00, 76.51s/it]
+Generating Rollout Epochs:   0%|          | 0/2 [00:00<?, ?it/s]Generating Rollout Epochs:  50%|█████     | 1/2 [01:12<01:12, 72.10s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:27<00:00, 74.19s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:27<00:00, 73.88s/it]
+Generating Rollout Epochs:   0%|          | 0/2 [00:00<?, ?it/s]Generating Rollout Epochs:  50%|█████     | 1/2 [01:12<01:12, 72.87s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:27<00:00, 73.64s/it]Generating Rollout Epochs: 100%|██████████| 2/2 [02:27<00:00, 73.52s/it]
+Generating Rollout Epochs:   0%|          | 0/2 [00:00<?, ?it/s]Generating Rollout Epochs:  50%|█████     | 1/2 [01:16<01:16, 76.06s/it]

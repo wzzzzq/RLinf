@@ -1,0 +1,209 @@
+_wandb:
+    value:
+        cli_version: 0.23.1
+        e:
+            w2q44no3qrvkc1p30pmq0w83rd1s2yv4:
+                args:
+                    - --config-path
+                    - config/
+                    - --config-name
+                    - libero_cfm_sft_openpi
+                codePath: examples/sft/train_embodied_sft.py
+                codePathLocal: train_embodied_sft.py
+                cpu_count: 64
+                cpu_count_logical: 128
+                cudaVersion: "12.2"
+                disk:
+                    /:
+                        total: "105089261568"
+                        used: "101898940416"
+                email: christianwang@sjtu.edu.cn
+                executable: /mnt/pfs/scalelab/pi05_venv/bin/python
+                git:
+                    commit: 0bf405b83da0f3034261250761017fce1d229fc8
+                    remote: https://github.com/RLinf/RLinf.git
+                gpu: NVIDIA A800-SXM4-80GB
+                gpu_count: 8
+                gpu_nvidia:
+                    - architecture: Ampere
+                      cudaCores: 6912
+                      memoryTotal: "85899345920"
+                      name: NVIDIA A800-SXM4-80GB
+                      uuid: GPU-1bc67e36-20b1-c500-5255-91155e8a582b
+                    - architecture: Ampere
+                      cudaCores: 6912
+                      memoryTotal: "85899345920"
+                      name: NVIDIA A800-SXM4-80GB
+                      uuid: GPU-3510a463-483b-bcfc-c381-c35ead2fbae0
+                    - architecture: Ampere
+                      cudaCores: 6912
+                      memoryTotal: "85899345920"
+                      name: NVIDIA A800-SXM4-80GB
+                      uuid: GPU-ac8ccd2b-b066-9e73-238e-9c84dfb743fd
+                    - architecture: Ampere
+                      cudaCores: 6912
+                      memoryTotal: "85899345920"
+                      name: NVIDIA A800-SXM4-80GB
+                      uuid: GPU-bf6d0c1e-762e-fc0b-df3e-5796057fe4b6
+                    - architecture: Ampere
+                      cudaCores: 6912
+                      memoryTotal: "85899345920"
+                      name: NVIDIA A800-SXM4-80GB
+                      uuid: GPU-cdaf2a66-1ac3-d059-9ffa-d1ac33817281
+                    - architecture: Ampere
+                      cudaCores: 6912
+                      memoryTotal: "85899345920"
+                      name: NVIDIA A800-SXM4-80GB
+                      uuid: GPU-4470f1aa-4039-2b45-633a-d09a863e928a
+                    - architecture: Ampere
+                      cudaCores: 6912
+                      memoryTotal: "85899345920"
+                      name: NVIDIA A800-SXM4-80GB
+                      uuid: GPU-f8baea3f-b68d-292e-84a4-68b85157e160
+                    - architecture: Ampere
+                      cudaCores: 6912
+                      memoryTotal: "85899345920"
+                      name: NVIDIA A800-SXM4-80GB
+                      uuid: GPU-efc9321c-716b-1218-2723-1b9a809c3ffe
+                host: aibox-r7d58b052f89-b67b675df-76v44
+                memory:
+                    total: "1079939739648"
+                os: Linux-5.15.0-72-generic-x86_64-with-glibc2.35
+                program: /root/workspace/ziqian/RLinf/examples/sft/train_embodied_sft.py
+                python: CPython 3.11.14
+                root: ../results/wandb
+                startedAt: "2025-12-24T09:53:04.384675Z"
+                writerId: w2q44no3qrvkc1p30pmq0w83rd1s2yv4
+        m: []
+        python_version: 3.11.14
+        t:
+            "1":
+                - 1
+                - 2
+                - 3
+                - 11
+                - 12
+                - 30
+                - 41
+                - 49
+                - 50
+                - 71
+                - 105
+            "2":
+                - 1
+                - 2
+                - 3
+                - 11
+                - 12
+                - 30
+                - 41
+                - 49
+                - 50
+                - 71
+                - 105
+            "3":
+                - 13
+                - 16
+                - 61
+            "4": 3.11.14
+            "5": 0.23.1
+            "6": 4.53.2
+            "12": 0.23.1
+            "13": linux-x86_64
+actor:
+    value:
+        fsdp_config:
+            amp:
+                enabled: false
+                precision: bf16
+                use_grad_scaler: false
+            backward_prefetch: null
+            cpu_offload: false
+            enable_gradient_accumulation: true
+            forward_prefetch: false
+            fsdp_size: -1
+            gradient_checkpointing: false
+            limit_all_gathers: false
+            mixed_precision:
+                buffer_dtype: null
+                param_dtype: null
+                reduce_dtype: null
+            offload_pin_memory: false
+            reshard_after_forward: true
+            sharding_strategy: no_shard
+            strategy: fsdp
+            use_liger_kernel: false
+            use_orig_params: true
+        global_batch_size: 512
+        group_name: ActorGroup
+        micro_batch_size: 16
+        model:
+            action_dim: 7
+            add_value_head: false
+            is_lora: false
+            lora_rank: 32
+            model_path: /mnt/pfs/scalelab/ziqianwang/models/RLinf-Pi05-SFT
+            model_type: openpi
+            num_action_chunks: 4
+            num_steps: 4
+            openpi:
+                action_chunk: 4
+                action_env_dim: 7
+                add_value_head: false
+                cfm_alpha: 1
+                cfm_boundary_threshold: 0.9
+                cfm_delta_t: 0.001
+                cfm_enabled: true
+                cfm_loss_weight: 0.25
+                cfm_num_inference_steps: 2
+                cfm_time_eps: 0.001
+                config_name: pi05_libero
+                detach_critic_input: false
+                noise_level: 0.5
+                noise_method: flow_sde
+                num_images_in_input: 2
+                num_steps: 4
+                train_expert_only: true
+            precision: null
+            use_proprio: true
+        optim:
+            adam_beta1: 0.9
+            adam_beta2: 0.95
+            adam_eps: 1e-05
+            clip_grad: 1
+            lr: 0.0002
+            value_lr: 0.000155
+            weight_decay: 0.01
+        seed: 0
+        training_backend: fsdp
+algorithm:
+    value:
+        adv_type: gae
+cluster:
+    value:
+        component_placement:
+            actor,env,rollout: 0-3
+        num_nodes: 1
+critic:
+    value:
+        use_critic_model: false
+data:
+    value:
+        data_path: /mnt/pfs/scalelab/hf_cache/lerobot/physical-intelligence/libero
+reward:
+    value:
+        use_reward_model: false
+runner:
+    value:
+        logger:
+            experiment_name: cfm_sft_openpi
+            log_path: ../results
+            logger_backends:
+                - tensorboard
+                - wandb
+            project_name: rlinf
+        max_epochs: 1000
+        max_steps: 200000
+        save_interval: 10000
+        task_type: sft
+        val_check_interval: 1000

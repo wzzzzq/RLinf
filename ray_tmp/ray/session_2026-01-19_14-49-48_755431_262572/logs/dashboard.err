@@ -1,0 +1,30 @@
+Traceback (most recent call last):
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/handle.py", line 144, in wait_for_module_ready
+    self.parent_conn.recv()
+  File "/root/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/root/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/root/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/multiprocessing/connection.py", line 399, in _recv
+    raise EOFError
+EOFError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/dashboard.py", line 305, in <module>
+    raise e
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/dashboard.py", line 293, in <module>
+    loop.run_until_complete(dashboard.run())
+  File "/root/.local/share/uv/python/cpython-3.11.14-linux-x86_64-gnu/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/dashboard.py", line 94, in run
+    await self.dashboard_head.run()
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/head.py", line 404, in run
+    handle.wait_for_module_ready()
+  File "/mnt/pfs/scalelab2/pi05_venv/lib/python3.11/site-packages/ray/dashboard/subprocesses/handle.py", line 146, in wait_for_module_ready
+    raise RuntimeError(
+RuntimeError: Module MetricsHead failed to start. Received EOF from pipe.

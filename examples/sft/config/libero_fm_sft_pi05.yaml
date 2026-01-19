@@ -1,0 +1,130 @@
+defaults:
+  - model/pi0_5@actor.model
+  - training_backend/fsdp@actor.fsdp_config
+  - override hydra/job_logging: stdout
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  searchpath:
+    - file://${oc.env:EMBODIED_PATH}/config/
+
+cluster:
+  num_nodes: 1
+  component_placement:
+    actor,env,rollout: 2,3  # 使用空闲的GPU 2,3
+
+runner:
+  task_type: sft
+  logger:
+    log_path: "../results"
+    project_name: rlinf
+    experiment_name: "cfm_sft_pi05_libero"
+    logger_backends: ["tensorboard", "wandb"]
+
+  max_epochs: 1000
+  max_steps: 1500
+  val_check_interval: 500
+  save_interval: 500
+
+data:
+  data_path: "/mnt/pfs/scalelab2/hf_cache/lerobot/physical-intelligence/libero"
+  # 400条数据：40任务 × 10条/任务
+  # Libero每任务约50条demo，每任务取前10条
+  episodes: [
+    # Task 0-9 (libero_10): each task has 50 episodes
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,        # task 0
+    50, 51, 52, 53, 54, 55, 56, 57, 58, 59,  # task 1
+    100, 101, 102, 103, 104, 105, 106, 107, 108, 109,  # task 2
+    150, 151, 152, 153, 154, 155, 156, 157, 158, 159,  # task 3
+    200, 201, 202, 203, 204, 205, 206, 207, 208, 209,  # task 4
+    250, 251, 252, 253, 254, 255, 256, 257, 258, 259,  # task 5
+    300, 301, 302, 303, 304, 305, 306, 307, 308, 309,  # task 6
+    350, 351, 352, 353, 354, 355, 356, 357, 358, 359,  # task 7
+    400, 401, 402, 403, 404, 405, 406, 407, 408, 409,  # task 8
+    450, 451, 452, 453, 454, 455, 456, 457, 458, 459,  # task 9
+    # Task 10-19 (libero_goal)
+    500, 501, 502, 503, 504, 505, 506, 507, 508, 509,  # task 10
+    550, 551, 552, 553, 554, 555, 556, 557, 558, 559,  # task 11
+    600, 601, 602, 603, 604, 605, 606, 607, 608, 609,  # task 12
+    650, 651, 652, 653, 654, 655, 656, 657, 658, 659,  # task 13
+    700, 701, 702, 703, 704, 705, 706, 707, 708, 709,  # task 14
+    750, 751, 752, 753, 754, 755, 756, 757, 758, 759,  # task 15
+    800, 801, 802, 803, 804, 805, 806, 807, 808, 809,  # task 16
+    850, 851, 852, 853, 854, 855, 856, 857, 858, 859,  # task 17
+    900, 901, 902, 903, 904, 905, 906, 907, 908, 909,  # task 18
+    950, 951, 952, 953, 954, 955, 956, 957, 958, 959,  # task 19
+    # Task 20-29 (libero_object)
+    1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009,  # task 20
+    1050, 1051, 1052, 1053, 1054, 1055, 1056, 1057, 1058, 1059,  # task 21
+    1100, 1101, 1102, 1103, 1104, 1105, 1106, 1107, 1108, 1109,  # task 22
+    1150, 1151, 1152, 1153, 1154, 1155, 1156, 1157, 1158, 1159,  # task 23
+    1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207, 1208, 1209,  # task 24
+    1250, 1251, 1252, 1253, 1254, 1255, 1256, 1257, 1258, 1259,  # task 25
+    1300, 1301, 1302, 1303, 1304, 1305, 1306, 1307, 1308, 1309,  # task 26
+    1350, 1351, 1352, 1353, 1354, 1355, 1356, 1357, 1358, 1359,  # task 27
+    1400, 1401, 1402, 1403, 1404, 1405, 1406, 1407, 1408, 1409,  # task 28
+    1450, 1451, 1452, 1453, 1454, 1455, 1456, 1457, 1458, 1459,  # task 29
+    # Task 30-39 (libero_spatial)
+    1500, 1501, 1502, 1503, 1504, 1505, 1506, 1507, 1508, 1509,  # task 30
+    1550, 1551, 1552, 1553, 1554, 1555, 1556, 1557, 1558, 1559,  # task 31
+    1600, 1601, 1602, 1603, 1604, 1605, 1606, 1607, 1608, 1609,  # task 32
+    1650, 1651, 1652, 1653, 1654, 1655, 1656, 1657, 1658, 1659,  # task 33
+    1700, 1701, 1702, 1703, 1704, 1705, 1706, 1707, 1708, 1709,  # task 34
+    1750, 1751, 1752, 1753, 1754, 1755, 1756, 1757, 1758, 1759,  # task 35
+    1800, 1801, 1802, 1803, 1804, 1805, 1806, 1807, 1808, 1809,  # task 36
+    1850, 1851, 1852, 1853, 1854, 1855, 1856, 1857, 1858, 1859,  # task 37
+    1900, 1901, 1902, 1903, 1904, 1905, 1906, 1907, 1908, 1909,  # task 38
+    1950, 1951, 1952, 1953, 1954, 1955, 1956, 1957, 1958, 1959   # task 39
+  ]
+
+algorithm:
+  adv_type: gae
+
+actor:
+  group_name: "ActorGroup"
+  training_backend: "fsdp"
+  micro_batch_size: 144
+  global_batch_size: 576  # gradient_accumulation = 576/144/2 = 2
+  seed: 0
+
+  model:
+    precision: null
+    model_path: "/mnt/pfs/scalelab2/ziqianwang/models/RLinf-Pi05-SFT"
+    num_action_chunks: 10
+    add_value_head: False
+    openpi:
+      config_name: "pi05_libero"
+      detach_critic_input: False
+      # CFM训练 (75% FM + 25% CFM)
+      cfm_enabled: True
+      cfm_loss_weight: 0.25
+      # CFM EMA配置 (稳定训练)
+      cfm_ema_enabled: True
+      cfm_ema_decay: 0.995  # 半衰期~139步，可调：0.99(快) / 0.995(中) / 0.999(慢)
+
+  optim:
+    lr: 5.0e-5  # Pi0.5推荐学习率
+    value_lr: 1.55e-4
+    adam_beta1: 0.9
+    adam_beta2: 0.95
+    adam_eps: 1.0e-05
+    weight_decay: 0.01
+    clip_grad: 1.0
+
+  fsdp_config:
+    strategy: "fsdp"
+    sharding_strategy: "no_shard"
+    use_orig_params: True
+    gradient_checkpointing: False  # OpenPI不支持
+    mixed_precision:
+      param_dtype: ${actor.model.precision}
+      reduce_dtype: ${actor.model.precision}
+      buffer_dtype: ${actor.model.precision}
+
+reward:
+  use_reward_model: False
+
+critic:
+  use_critic_model: False

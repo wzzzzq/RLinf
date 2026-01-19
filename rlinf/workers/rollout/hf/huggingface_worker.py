@@ -249,6 +249,8 @@ class MultiStepRolloutWorker(Worker):
                         terminations=env_output["terminations"],
                         rewards=rewards,  # the first step is reset step, reward is none, which will not be appended to the buffer
                         forward_inputs=last_forward_inputs[stage_id],
+                        # DSRL: latent actor logprobs
+                        prev_logprobs_latent=result.get("prev_logprobs_latent", None),
                     )
                     self.buffer_list[stage_id].append_result(chunk_step_result)
                     if last_extracted_obs[stage_id] is not None and hasattr(
