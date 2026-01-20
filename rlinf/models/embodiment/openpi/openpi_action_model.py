@@ -471,7 +471,7 @@ class OpenPi0ForRLActionPrediction(BasePolicy, PI0Pytorch):
         # DSRL: use latent actor to predict initial noise
         prev_logprobs_latent = None
         initial_noise = None
-        if getattr(self.config, "dsrl_enabled", False) and mode == "train":
+        if getattr(self.config, "dsrl_enabled", False):
             state_feature = self.get_state_feature_for_dsrl(prefix_output, state)
             initial_noise, prev_logprobs_latent = self.latent_actor.sample_and_log_prob(
                 state_feature,
