@@ -132,6 +132,7 @@ actor:
     unnorm_key: franka # starVLA action-stats key for LIBERO Franka tasks.
     add_value_head: False
     action_stats_source: "minmax"
+    policy_setup: libero # remap gripper 0/1 -> +1/-1 for the LIBERO env (matches starVLA BC eval _binarize_gripper_open). Without this _gripper_mapping is a no-op (ROBOT_PLATFORM unset) and the gripper is sent as raw 0/1 -> never opens/closes -> SR=0.
     starvla:
       framework_name: "QwenOATFast"
       expected_action_dim: ${actor.model.action_dim}
