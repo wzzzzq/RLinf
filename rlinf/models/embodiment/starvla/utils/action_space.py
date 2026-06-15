@@ -200,6 +200,20 @@ def unnormalize_actions_for_env(
         "q01": np.asarray(action_norm_stats["q01"], dtype=np.float32),
         "mask": np.asarray(action_norm_stats["mask"], dtype=bool),
     }
+    # [OAT fix] For LIBERO, gripper (idx 6) is a BINARY 0/1 channel. baseframework.unnormalize_actions
+    # binarizes it to {0,1} and THEN linearly rescales every masked dim. With gripper min/max = 0/1
+    # (minmax stats) the "close" state (0) rescales to exactly 0.5, which _gripper_mapping's `< 0.5`
+    # test reads as "open" -> the gripper can NEVER close -> 0% success. Excluding the gripper from the
+    # rescale (mask=False) keeps the clean {0,1}, so _gripper_mapping maps 0->+1 (close) / 1->-1 (open),
+    # matching the starVLA BC eval gripper convention. Scoped to LIBERO (same gate as _gripper_mapping).
+    _resolved_platform = (
+        str(policy_setup).strip().lower()
+        if policy_setup is not None
+        else str(os.environ.get("ROBOT_PLATFORM", "")).strip().lower()
+    )
+    if _resolved_platform in _LIBERO_PLATFORMS and starvla_stats["mask"].shape[0] > 6:
+        starvla_stats["mask"] = starvla_stats["mask"].copy()
+        starvla_stats["mask"][6] = False
     env_flat = baseframework.unnormalize_actions(flat, starvla_stats)
     env_actions = np.asarray(env_flat, dtype=np.float32).reshape(actions.shape)
     return _gripper_mapping(env_actions, policy_setup=policy_setup)
